@@ -3,6 +3,7 @@ const path = require('path');
 const { WebSocket } = require('ws');
 const ws = new WebSocket("wss://api.chillbot.cloud/ws");
 const { Client } = require('@createlumina/discord-rpc');
+const client = new Client({ clientId: "848384657774084107" });
 
 let mainWindow;
 
@@ -59,8 +60,8 @@ ws.on('message', function message(data) {
         case 'TrackStartEvent':
         case 'UserJoined':
             client.user?.setActivity({
-                details: "Listening to",
-                state: `${ParsedData.data.title} by ${ParsedData.data.author}`,
+                details: `${ParsedData.data.title}`,
+                state: `${ParsedData.data.author}`,
                 largeImageKey: "icon",
                 smallImageKey: ParsedData.data.source,
                 buttons: [{
@@ -73,17 +74,12 @@ ws.on('message', function message(data) {
         
         case 'TrackEndEvent':
         case 'UserLeft':
-            client.user?.setActivity({
-                state: "Not playing anything currently...",
-                largeImageKey: "icon"
-            });
-            return
-
         default:
             client.user?.setActivity({
                 state: "Not playing anything currently...",
                 largeImageKey: "icon"
             });
+            return
     }
     
 });
@@ -129,20 +125,18 @@ app.on('activate', () => {
   }
 });
 
-const client = new Client({ clientId: "848384657774084107" });
 
-ipcMain.on('RPCStatus:login', (ipcEvent) => {
-    client.user?.setActivity({
+ipcMain.on('RPCStatus:login', async (ipcEvent) => {
+    await client.user?.setActivity({
         state: "Not playing anything currently...",
         largeImageKey: "icon"
-    });
-
+    })
     isConnected = true
 });
 
-ipcMain.on('RPCStatus:logout', (ipcEvent) => {
-    client.user?.setActivity({});
+ipcMain.on('RPCStatus:logout', async (ipcEvent) => {
+    client.user?.clearActivity()
     isConnected = false
 });
 
-client.login().catch(console.error);
+client.connect().catch(console.error);
