@@ -1,0 +1,32 @@
+{
+  "name": "chillbotrpc",
+  "version": "1.2.0",
+  "description": "An application used for changing your Discord RPC status depending on what you listen to using the bot.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
+  },
+  "build": {
+    "directories": {
+      "buildResources": "buildResources"
+    },
+    "appId": "ChillBot.RPC"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@createlumina/discord-rpc": "^1.0.0",
+    "@xhayper/discord-rpc": "^1.1.2",
+    "discord-rpc": "^4.0.1",
+    "discord.js": "^14.14.1",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "caxa": "^3.0.1",
+    "electron": "^29.1.5",
+    "electron-builder": "^24.13.3"
+  }
+}
