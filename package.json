@@ -1,6 +1,6 @@
 {
   "name": "chillbotrpc",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "An application used for changing your Discord RPC status depending on what you listen to using the bot.",
   "main": "main.js",
   "scripts": {
