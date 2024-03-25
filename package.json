@@ -15,7 +15,7 @@
     },
     "appId": "ChillBot.RPC"
   },
-  "author": "",
+  "author": "ChillBot",
   "license": "ISC",
   "dependencies": {
     "@createlumina/discord-rpc": "^1.0.0",
