@@ -10,8 +10,20 @@
     "app:dist": "electron-builder"
   },
   "build": {
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "buildResources/icon.ico"
+    },
     "directories": {
       "buildResources": "buildResources"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "oneClick": false
     },
     "appId": "ChillBot.RPC"
   },
