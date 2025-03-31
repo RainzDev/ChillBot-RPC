@@ -36,7 +36,8 @@ class RPCSocketConnection {
         packet.writeInt32LE(dataLen, 4);
         packet.write(message, 8, dataLen);
 
-        this.connection.write(Buffer.concat([packet, Buffer.from(message, 'utf-8')]));
+        this.connection.write(packet);
+
     }
 
     setActivity(data) {
