@@ -9,7 +9,10 @@
             Test
         </div> -->
         <div style="text-align: center; margin-top: 15%;">
-            <img class="icon" src="./images/icon.png">
+            <img class="icon" src="./images/icon.png" style="height: 200px; width: auto; border-radius: 50%; border: 5px solid white;">
+            <div class="token-text-container">
+                <input class="token-input" id="token-input" type="text" placeholder="Token">
+            </div>
             <div class="switch-container">
                 <label class="switch">
                     <input id="switch-round" type="checkbox" disabled>
@@ -19,7 +22,7 @@
         </div>
         <div class="alert" id="alert-container">
             <span class="closebtn", onclick="this.parentElement.style.display='none';">&times;</span>
-            <strong>Error!</strong> Your Discord desktop version is not opened. The slider is disabled until your Discord is opened.
+            <strong>Error!</strong> Your Discord desktop is not opened. The slider is disabled until your Discord is opened.
         </div>
     </body>
     <style>
@@ -48,8 +51,17 @@
         .closebtn:hover {
             color: black;
         }
+        .token-text-container {
+            margin-top: 15px;
+        }
+        .token-input {
+            width: 300px;
+            height: 20px;
+            border-radius: 7px;
+            text-align: center;
+        }
         .switch-container {
-            margin-top: 9px;
+            margin-top: 50px;
         }
         .switch {
             position: relative;

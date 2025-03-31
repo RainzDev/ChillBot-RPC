@@ -1,21 +1,25 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron');
 const path = require('path');
 const { WebSocket } = require('ws');
-const ws = new WebSocket("wss://api.chillbot.cloud/ws");
-const { Client } = require('@createlumina/discord-rpc');
 const { exitCode } = require('process');
-const client = new Client({ clientId: "848384657774084107" });
+const RPCSocketConnection = require('./activityHandler');
+const client = new RPCSocketConnection({ clientId: "848384657774084107" })
 
 let mainWindow;
+let ws;
 
 let isRunning = false
 
 let isConnected = false
 
+
 const Sources = {
     "youtube": "YouTube",
     "spotify": "Spotify",
-    "soundcloud": "SoundCloud"
+    "soundcloud": "SoundCloud",
+    "deezer": "Deezer",
+    "tidal": "Tidal",
+    "apple music": "Apple Music"
 };
 
 function createWindow() {
@@ -37,54 +41,50 @@ function createWindow() {
     });
 }
 
-ws.on('open', function open() {
-    ws.send(JSON.stringify({
-		"key": "TIFOFJDGFGDFGFDGF",
-		"source": "None",
-		"author": "None",
-		"state": "None",
-		"title": "None",
-		"user_ids": [],
-		"URI": "None"
-	}));
-});
-
 ws.on('message', function message(data) {
     if (!isConnected) return; // check connection
     const ParsedData = JSON.parse(data.toString())
-    //console.log(ParsedData)
-    if ((!ParsedData) || (!ParsedData.data)) return; // return if no data (shouldnt happen)
-    if (!(ParsedData.data.discordUserId == client.user.id) 
-        && !(ParsedData.data.discordUserIds?.includes(client.user.id))) { return } // check for right user
     
 
-    switch(ParsedData.state) {
+    switch(ParsedData.event) {
         case 'TrackStartEvent':
+            dateNow = new Date();
+
+            const startTimestamp = dateNow.getTime()
+            const endTimestamp = dateNow.getTime() + ParsedData.player.tracks.current.duration
+
+            client.setActivity({
+                name: Sources[ParsedData.player.tracks.current.source],
+                type: 2,
+                details: ParsedData.player.tracks.current.title,
+                state: ParsedData.player.tracks.current.author,
+                timestamps: {
+                    start: startTimestamp,
+                    end: endTimestamp
+                },
+                assets: {
+                    large_image: ParsedData.player.tracks.current.artwork_url,
+                    small_image: "icon",
+                    small_text: "ChillBot"
+                },
+                buttons: [
+                    {
+                        label: "Listen Here",
+                        url: ParsedData.player.tracks.current.uri
+                    },
+                    {
+                        label: "Invite ChillBot",
+                        url: "https://discord.com/oauth2/authorize?client_id=848384657774084107"
+                    }
+                ]
+            })
         case 'UserJoined':
-            try {
-                client.user?.setActivity({
-                    details: `${ParsedData.data.title}`,
-                    state: `${ParsedData.data.author}`,
-                    largeImageKey: "icon",
-                    smallImageKey: ParsedData.data.source,
-                    buttons: [{
-                        "label": "Listen Here",
-                        "url": ParsedData.data.URI
-                    }],
-                    smallImageText: Sources[ParsedData.data.source]
-                });
-            }
-            catch (err) {
-                isConnected = false
-            }
-            
-            return
         
         case 'TrackEndEvent':
         case 'UserLeft':
         default:
             try{
-                client.user?.setActivity({
+                client.setActivity({
                     state: "Not playing anything currently...",
                     largeImageKey: "icon"
                 });
@@ -94,6 +94,17 @@ ws.on('message', function message(data) {
             return
     }
     
+});
+
+ws.on('open', () => {
+    client.connect().catch(async () => {
+        console.log("Failed to find process.. Waiting 3s")
+    })
+    client.setActivity({
+        state: "Not playing anything currently...",
+        largeImageKey: "icon"
+    })
+    isConnected = true
 });
 
 app.on('ready', createWindow);
@@ -139,12 +150,8 @@ app.on('activate', () => {
 });
 
 
-ipcMain.on('RPCStatus:login', async (ipcEvent) => {
-    await client.user?.setActivity({
-        state: "Not playing anything currently...",
-        largeImageKey: "icon"
-    })
-    isConnected = true
+ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
+    ws = new WebSocket(`wss://api.chillbot.cloud/ws?key=${token}`);
 });
 
 ipcMain.on('RPCStatus:logout', async (ipcEvent) => {
