@@ -5,25 +5,27 @@
         <title>ChillBot RPC</title>
         <link rel="stylesheet" href="assets/css/styles.css">
     </head>
-    <body style="background-color: #AA336A;">
-        <!-- <div class="settings-container" style="background-color: palevioletred; height: 560px; width: 35px;">
-            Test
-        </div> -->
-        <div style="text-align: center; margin-top: 15%;">
-            <img class="icon" src="./images/icon.png" style="height: 200px; width: auto; border-radius: 50%; border: 5px solid white;">
-            <div class="token-text-container">
-                <input class="token-input" id="token-input" type="text" placeholder="Token">
+    <body>
+        <div class="background-blur">
+            <div class="alert" id="alert-container">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">×</span>
+                <strong>Error!</strong> Your Discord desktop is not opened. The slider is disabled until your Discord is opened.
             </div>
-            <div class="switch-container">
-                <label class="switch">
-                    <input id="switch-round" type="checkbox" disabled>
-                    <span class="slider round" id="slider-round"></span>
-                </label>
+            <!-- <div class="settings-container" style="background-color: palevioletred; height: 560px; width: 35px;">
+                Test
+            </div> -->
+            <div style="text-align: center; margin-top: 15%;">
+                <img class="icon" src="./images/icon.png" style="height: 200px; width: auto; border-radius: 50%; border: 5px solid white;">
+                <div class="token-text-container">
+                    <input class="token-input" id="token-input" type="text" placeholder="Token">
+                </div>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input id="switch-round" type="checkbox" disabled>
+                        <span class="slider round" id="slider-round"></span>
+                    </label>
+                </div>
             </div>
-        </div>
-        <div class="alert" id="alert-container">
-            <span class="closebtn" onclick="this.parentElement.style.display='none';">×</span>
-            <strong>Error!</strong> Your Discord desktop is not opened. The slider is disabled until your Discord is opened.
         </div>
     </body>
     <script src="./renderer.js"></script>
