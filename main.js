@@ -93,6 +93,7 @@ ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
     client.connect()
     ws = new WebSocket(`wss://api.chillbot.cloud/ws?key=${token}`);
     ws.onopen = function open() {
+        console.log("testtest")
         client.setActivity({
             state: "Not playing anything currently...",
             largeImageKey: "icon"
@@ -101,7 +102,7 @@ ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
     };
 
     ws.onmessage = function message(data) {
-        if (!isConnected) return; // check connection
+        console.log(data);
         const ParsedData = JSON.parse(data.toString())
         
     
@@ -157,6 +158,6 @@ ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
 });
 
 ipcMain.on('RPCStatus:logout', async (ipcEvent) => {
-    client.user?.clearActivity()
+    client.close()
     ws.close()
 });

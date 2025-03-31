@@ -18,13 +18,17 @@ class RPCSocketConnection {
             nonce: (new Date().getTime()).toFixed(20)
         };
 
-        this.connection.on('connect', () => {
-            this.sendMessage({ v: 1, client_id: this.clientId }, 0);
+        // this.connection.on('connect', () => {
+        this.sendMessage({ v: 1, client_id: this.clientId }, 0);
 
-            this.sendMessage(authorizePayload, 1);
-        });
+        this.sendMessage(authorizePayload, 1);
+        // });
 
         this.isConnected = true
+    }
+
+    close() {
+        this.connection.destroy()
     }
 
     sendMessage(payload, op) {
