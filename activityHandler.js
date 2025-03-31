@@ -3,7 +3,7 @@ const struct = require('python-struct');
 
 class RPCSocketConnection {
     constructor(clientId) {
-        this.client_id = clientId;
+        this.clientId = clientId;
         this.connection = net.createConnection({ path: '/run/user/1000/discord-ipc-0' });
         this.is_connected = false
     }
@@ -12,19 +12,19 @@ class RPCSocketConnection {
         const authorizePayload = {
             cmd: "AUTHORIZE",
             args: {
-                client_id: this.client_id,
+                client_id: this.clientId,
                 scopes: ["rpc", "identify"]
             },
-            nonce: (new Date().getTime() / 1000).toFixed(20)
+            nonce: (new Date().getTime()).toFixed(20)
         };
 
         this.connection.on('connect', () => {
-            this.sendMessage({ v: 1, clientId: this.clientId }, 0);
+            this.sendMessage({ v: 1, client_id: this.clientId }, 0);
 
             this.sendMessage(authorizePayload, 1);
         });
 
-        this.is_connected = true
+        this.isConnected = true
     }
 
     sendMessage(payload, op) {

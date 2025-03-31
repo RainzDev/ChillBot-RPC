@@ -97,9 +97,7 @@ ws.on('message', function message(data) {
 });
 
 ws.on('open', () => {
-    client.connect().catch(async () => {
-        console.log("Failed to find process.. Waiting 3s")
-    })
+    client.connect()
     client.setActivity({
         state: "Not playing anything currently...",
         largeImageKey: "icon"
@@ -132,7 +130,6 @@ app.whenReady().then(() => {
 
     tray.setToolTip('ChillBot RPC')
     tray.setContextMenu(menu)
-    ClientConnect()
 });
 
 app.on('window-all-closed', () => {
@@ -156,25 +153,5 @@ ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
 
 ipcMain.on('RPCStatus:logout', async (ipcEvent) => {
     client.user?.clearActivity()
-    isConnected = false
+    ws.close()
 });
-
-
-
-async function ClientConnect() {
-    let retries = 0
-    while (!client.isConnected) {
-        client.connect().catch(async () => {
-            console.log("Failed to find process.. Waiting 3s")
-            await (new Promise((r) => setTimeout(r, 3000)))
-        })
-        await (new Promise((r) => setTimeout(r, 500)))
-        retries++
-        if (retries > 5) {
-            console.log("Failed to find discord process in 6 tries. Waiting for 30s")
-            await (new Promise((r) => setTimeout(r, 30000)))
-            retries = 0
-        }
-    }
-    mainWindow.webContents.send('SwitchState')
-}
