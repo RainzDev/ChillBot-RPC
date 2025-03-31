@@ -5,6 +5,12 @@ const { exitCode } = require('process');
 const RPCSocketConnection = require('./activityHandler');
 const client = new RPCSocketConnection({ clientId: "848384657774084107" })
 
+class webs {
+    constructor() {
+        this.on = "test"
+    }
+}
+
 let mainWindow;
 let ws;
 
@@ -39,69 +45,6 @@ function createWindow() {
     });
 }
 
-ws.on('message', function message(data) {
-    if (!isConnected) return; // check connection
-    const ParsedData = JSON.parse(data.toString())
-    
-
-    switch(ParsedData.event) {
-        case 'TrackStartEvent':
-            dateNow = new Date();
-
-            const startTimestamp = dateNow.getTime()
-            const endTimestamp = dateNow.getTime() + ParsedData.player.tracks.current.duration
-
-            client.setActivity({
-                name: Sources[ParsedData.player.tracks.current.source],
-                type: 2,
-                details: ParsedData.player.tracks.current.title,
-                state: ParsedData.player.tracks.current.author,
-                timestamps: {
-                    start: startTimestamp,
-                    end: endTimestamp
-                },
-                assets: {
-                    large_image: ParsedData.player.tracks.current.artwork_url,
-                    small_image: "icon",
-                    small_text: "ChillBot"
-                },
-                buttons: [
-                    {
-                        label: "Listen Here",
-                        url: ParsedData.player.tracks.current.uri
-                    },
-                    {
-                        label: "Invite ChillBot",
-                        url: "https://discord.com/oauth2/authorize?client_id=848384657774084107"
-                    }
-                ]
-            })
-        case 'UserJoined':
-        
-        case 'TrackEndEvent':
-        case 'UserLeft':
-        default:
-            try{
-                client.setActivity({
-                    state: "Not playing anything currently...",
-                    largeImageKey: "icon"
-                });
-            } catch (err) {
-                isConnected = false
-            }
-            return
-    }
-    
-});
-
-ws.on('open', () => {
-    client.connect()
-    client.setActivity({
-        state: "Not playing anything currently...",
-        largeImageKey: "icon"
-    })
-    isConnected = true
-});
 
 app.on('ready', createWindow);
 
@@ -134,10 +77,6 @@ app.on('window-all-closed', () => {
     app.quit();
 });
 
-app.on('browser-window-blur', () => {
-    mainWindow.hide();
-})
-
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
@@ -147,6 +86,69 @@ app.on('activate', () => {
 
 ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
     ws = new WebSocket(`wss://api.chillbot.cloud/ws?key=${token}`);
+    ws.onopen = function open() {
+        client.connect()
+        client.setActivity({
+            state: "Not playing anything currently...",
+            largeImageKey: "icon"
+        })
+        isConnected = true
+    };
+
+    ws.onmessage = function message(data) {
+        if (!isConnected) return; // check connection
+        const ParsedData = JSON.parse(data.toString())
+        
+    
+        switch(ParsedData.event) {
+            case 'TrackStartEvent':
+                dateNow = new Date();
+    
+                const startTimestamp = dateNow.getTime()
+                const endTimestamp = dateNow.getTime() + ParsedData.player.tracks.current.duration
+    
+                client.setActivity({
+                    name: Sources[ParsedData.player.tracks.current.source],
+                    type: 2,
+                    details: ParsedData.player.tracks.current.title,
+                    state: ParsedData.player.tracks.current.author,
+                    timestamps: {
+                        start: startTimestamp,
+                        end: endTimestamp
+                    },
+                    assets: {
+                        large_image: ParsedData.player.tracks.current.artwork_url,
+                        small_image: "icon",
+                        small_text: "ChillBot"
+                    },
+                    buttons: [
+                        {
+                            label: "Listen Here",
+                            url: ParsedData.player.tracks.current.uri
+                        },
+                        {
+                            label: "Invite ChillBot",
+                            url: "https://discord.com/oauth2/authorize?client_id=848384657774084107"
+                        }
+                    ]
+                })
+            case 'UserJoined':
+            
+            case 'TrackEndEvent':
+            case 'UserLeft':
+            default:
+                try{
+                    client.setActivity({
+                        state: "Not playing anything currently...",
+                        largeImageKey: "icon"
+                    });
+                } catch (err) {
+                    isConnected = false
+                }
+                return
+        }
+        
+    };
 });
 
 ipcMain.on('RPCStatus:logout', async (ipcEvent) => {
