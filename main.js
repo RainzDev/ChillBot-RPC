@@ -26,6 +26,10 @@ const Sources = {
     "apple music": "Apple Music"
 };
 
+client.connection.on('data', (data) => {
+    console.log(data.toString('utf-8'))
+})
+
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 600,
@@ -85,9 +89,10 @@ app.on('activate', () => {
 
 
 ipcMain.on('RPCStatus:login', async (ipcEvent, token) => {
+    console.log(token)
+    client.connect()
     ws = new WebSocket(`wss://api.chillbot.cloud/ws?key=${token}`);
     ws.onopen = function open() {
-        client.connect()
         client.setActivity({
             state: "Not playing anything currently...",
             largeImageKey: "icon"

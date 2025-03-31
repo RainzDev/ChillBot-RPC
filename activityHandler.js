@@ -1,11 +1,11 @@
 const net = require('net');
-const struct = require('python-struct');
+const struct = require('struct');
 
 class RPCSocketConnection {
     constructor(clientId) {
         this.clientId = clientId;
         this.connection = net.createConnection({ path: '/run/user/1000/discord-ipc-0' });
-        this.is_connected = false
+        this.isConnected = false
     }
 
     connect() {
@@ -29,10 +29,14 @@ class RPCSocketConnection {
 
     sendMessage(payload, op) {
         const message = JSON.stringify(payload);
-        const dataLen = Buffer.byteLength(message, 'utf-8');
+        const dataLen = Buffer.byteLength(message);
 
-        const header = struct.pack('<II', op, dataLen);
-        this.connection.write(Buffer.concat([header, Buffer.from(message, 'utf-8')]));
+        const packet = Buffer.alloc(8 + dataLen);
+        packet.writeInt32LE(op, 0);
+        packet.writeInt32LE(dataLen, 4);
+        packet.write(message, 8, dataLen);
+
+        this.connection.write(Buffer.concat([packet, Buffer.from(message, 'utf-8')]));
     }
 
     setActivity(data) {
