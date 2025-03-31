@@ -8,8 +8,6 @@ const client = new RPCSocketConnection({ clientId: "848384657774084107" })
 let mainWindow;
 let ws;
 
-let isRunning = false
-
 let isConnected = false
 
 
