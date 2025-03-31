@@ -15,7 +15,7 @@ class RPCSocketConnection {
                 client_id: this.clientId,
                 scopes: ["rpc", "identify"]
             },
-            nonce: (new Date().getTime()).toFixed(20)
+            nonce: (new Date().getTime() / 1000).toFixed(20)
         };
 
         // this.connection.on('connect', () => {
@@ -23,6 +23,8 @@ class RPCSocketConnection {
 
         this.sendMessage(authorizePayload, 1);
         // });
+
+        this.connection.setKeepAlive(true, 60000)
 
         this.isConnected = true
     }
